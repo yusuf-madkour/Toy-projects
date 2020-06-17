@@ -67,4 +67,4 @@ converted_image = [[ascii[int(modes[mode](pixel) / 255 * 64)]
 print(f"printing image in {mode} mode")
 # Printing image, one row at a time
 for row in converted_image:
-    print(color + "".join(2*char for char in row))
+    print(color + "".join(char for char in row))

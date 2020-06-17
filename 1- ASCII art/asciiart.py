@@ -28,7 +28,7 @@ except getopt.error as err:
 
 for current_argument, current_value in arguments:
     if current_argument in ("-f", "--file"):
-        image_name = current_value  # Image name, image has to be in the same directory
+        image_path = current_value  # Image name, image has to be in the same directory
     elif current_argument in ("-c", "--color"):
         colors = {'white': Fore.WHITE, 'green': Fore.GREEN,
                   'red': Fore.RED, 'blue': Fore.BLUE}
@@ -43,15 +43,15 @@ for current_argument, current_value in arguments:
 # These are ASCII characters sorted in ascending order from least to most bright
 ascii = "`^\",:;Il!i~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$"
 # Converting to avoid overflow warning when computing pixel brightness values
-im = np.uint16(imread(image_name))
-im = resize(im, (320, 240), preserve_range=True, anti_aliasing=True)
+pixel_array = np.uint16(imread(image_path))
+pixel_array = resize(pixel_array, (320, 240), preserve_range=True, anti_aliasing=True)
 print("Successfully loaded image!")
-print(f"Image size: {im.shape}")
-height, width = im.shape[0], im.shape[1]
+print(f"Image size: {pixel_array.shape}")
+height, width = pixel_array.shape[0], pixel_array.shape[1]
 init()  # Initializing colorama
 
 # Inverting colors if inv flag is passed to the script
-im = 255 - im if inv else im
+pixel_array = 255 - pixel_array if inv else pixel_array
 
 modes = {'average': lambda p: (p[0] + p[1] + p[2]) // 3,  # Taking average of RGB values
          # Taking average of minimum and maximum RGB values
@@ -61,9 +61,8 @@ modes = {'average': lambda p: (p[0] + p[1] + p[2]) // 3,  # Taking average of RG
 print("Converting to brightness matrix...")
 
 # This nested list comprehension maps each pixel to the suitable ascii character based on the pixel's brightness
-# Refer to the commented nested for loop below if this line looks cryptic
 converted_image = [[ascii[int(modes[mode](pixel) / 255 * 64)]
-                    for pixel in row] for row in im]
+                    for pixel in row] for row in pixel_array]
 
 print(f"printing image in {mode} mode")
 # Printing image, one row at a time

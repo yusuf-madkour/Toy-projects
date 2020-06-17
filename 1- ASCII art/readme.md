@@ -6,7 +6,7 @@ asciiart.py is a Python script that draws an image in command prompt using ASCII
 
 ## Installation
 
-Install requirements as shown below and download script.
+Install requirements as shown below and download the script.
 
 ```bash
 pip install -r requirements.txt
@@ -14,16 +14,17 @@ pip install -r requirements.txt
 
 ## Usage
 
-Run the script from terminal, replace filename with the name of the image you wish to draw. Image must be in the same directory as this script.
+Run the script from terminal, replace /path/to/file with the path to your image. If the image exists in the same directory as your script, then you only need to provide the name of the image.
 
 ```bash
-python asciiart.py -f filename
+python asciiart.py -f /path/to/file
 ```
+Note: I have only tested this script on windows 10 and Python 3.7.7
 
 ### Options
 
 **--file**
-Use this option to pass file name of image. This is required to be able to run the script.
+Use this option to pass the full path of the image (or the name only if the image exists in the same path). This is required to be able to run the script.
 
 **--color**
 Use this option to choose the color you wish the image to be printed in. Available colors are white, green, red and blue. Default color is white. (Optional)

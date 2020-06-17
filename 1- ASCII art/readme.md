@@ -19,7 +19,7 @@ Run the script from terminal, replace /path/to/file with the path to your image.
 ```bash
 python asciiart.py -f /path/to/file
 ```
-Note: I have only tested this script on windows 10 and Python 3.7.7
+**Note: I have only tested this script on windows 10 and Python 3.7.7**
 
 ### Options
 

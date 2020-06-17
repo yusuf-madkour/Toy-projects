@@ -18,8 +18,8 @@ color = Fore.WHITE
 
 # Arguments' handling
 argument_list = sys.argv[1:]
-short_options = "f:c:im:h"
-long_options = ["file=", "color=", "inv", "mode=", "help"]
+short_options = "f:c:im:"
+long_options = ["file=", "color=", "inv", "mode="]
 try:
     arguments, _ = getopt.getopt(argument_list, short_options, long_options)
 except getopt.error as err:

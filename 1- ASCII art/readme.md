@@ -1,6 +1,6 @@
 # asciiart
 
-asciiart.py is a Python script that draws an image in command prompt using ASCII characters. It is a toy project inspired by [Robert Heaton's Programming Projects for Advanced Beginners](https://robertheaton.com/2018/12/08/programming-projects-for-advanced-beginners/).
+asciiart.py is a Python script that draws an image in terminal using ASCII characters. It is a toy project inspired by [Robert Heaton's Programming Projects for Advanced Beginners](https://robertheaton.com/2018/12/08/programming-projects-for-advanced-beginners/).
 
 ![](https://github.com/yusuf-madkour/toy-projects/blob/master/1-%20ASCII%20art/demo.gif)
 
@@ -19,8 +19,10 @@ Run the script from terminal, replace /path/to/file with the path to your image.
 ```bash
 python asciiart.py -f /path/to/file
 ```
-**Note: I have only tested this script on windows 10 and Python 3.7.7**
+**Notes: 
 
+- I have only tested this script on Python 3.7.7 running on both windows 10 and pop os**
+- You may need to zoom out in your terminal window for the full image to be shown.
 ### Options
 
 **--file**

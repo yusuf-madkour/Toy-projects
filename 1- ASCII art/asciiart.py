@@ -23,7 +23,6 @@ long_options = ["file=", "color=", "inv", "mode=", "help"]
 try:
     arguments, _ = getopt.getopt(argument_list, short_options, long_options)
 except getopt.error as err:
-# Output error, and return with an error code
     print (str(err))
     sys.exit(2)
 

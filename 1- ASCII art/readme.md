@@ -21,7 +21,7 @@ python asciiart.py -f /path/to/file
 ```
 **Notes**
 
-- I have only tested this script on Python 3.7.7 running on both windows 10 and pop os**
+- I have only tested this script on Python 3.7.7 running on both windows 10 and pop os
 - You may need to zoom out in your terminal window for the full image to be shown.
 ### Options
 

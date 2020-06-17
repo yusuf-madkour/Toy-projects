@@ -36,9 +36,6 @@ for current_argument, current_value in arguments:
         inv = True
     elif current_argument in ("-m", "--mode"):
         mode = current_value.lower()
-    elif current_argument in ("-h", "--help"):
-        print(hlp)
-        sys.exit(2)
 
 # Converting images' pixels to ASCII characters
 ascii = "`^\",:;Il!i~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$" # These are ASCII characters sorted in ascending order from least to most bright

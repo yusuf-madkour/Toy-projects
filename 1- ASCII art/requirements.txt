@@ -1,0 +1,4 @@
+scikit_image==0.16.2
+numpy==1.18.1
+colorama==0.4.1
+skimage==0.0

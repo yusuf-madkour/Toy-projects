@@ -1,10 +1,10 @@
 from random import choices
 from colorama import Fore, init
 from copy import deepcopy
-from time import sleep  
+from time import sleep
 
 def random_state(width, height):
-    """TODO: Change the random generation process so that it operates on a 
+    """TODO: Change the random generation process so that it operates on a
             threshold to favor dead over alive or alive over dead"""
     return [choices([0, 1], k = width) for _ in range(height)]
 
@@ -14,22 +14,22 @@ def render(board):
         print(Fore.WHITE + '|', end='')
         for c in row:
             if c == 1:
-                print(Fore.GREEN+ '#' * scale, end='')
+                print(Fore.GREEN + '#' * scale, end='')
             else:
                 print(Fore.RED + '#' * scale, end='')
         print(Fore.WHITE + '|')
     print(Fore.WHITE + '-' * (scale * len(board[0])+2))
 
 def find_neighbours(brd, i, j):
-    ns = []                            
-    if i > 0:                          
+    ns = []
+    if i > 0:
         ns += brd[i-1][max(0, j-1):j+2]
-    if i < len(brd)-1:                 
+    if i < len(brd)-1:
         ns += brd[i+1][max(0, j-1):j+2]
-    if j > 0:                          
-        ns.append(brd[i][j-1])         
-    if j < len(brd[i])-1:              
-        ns.append(brd[i][j+1])         
+    if j > 0:
+        ns.append(brd[i][j-1])
+    if j < len(brd[i])-1:
+        ns.append(brd[i][j+1])
     return ns
 
 def next_board_state(board):
@@ -53,7 +53,9 @@ if __name__ == '__main__':
     b = random_state(20, 15)
     while True:
         render(b)
-        # if b == next_board_state(b): break
         b = next_board_state(b)
         sleep(0.3)
-        if b == next_board_state(b): render(b); break
+        if b == next_board_state(b) or b == next_board_state(next_board_state(b)):
+            render(next_board_state(b))
+            render(next_board_state(b))
+            break

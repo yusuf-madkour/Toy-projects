@@ -2,6 +2,7 @@ from random import choices
 from colorama import Fore, init
 from copy import deepcopy
 from time import sleep
+from os import system
 
 def random_state(width, height):
     """TODO: Change the random generation process so that it operates on a
@@ -35,15 +36,12 @@ def find_neighbours(brd, i, j):
 def next_board_state(board):
     new_board = deepcopy(board)
     for i, row in enumerate(board):
-        for j, c in enumerate(row):
-            neighbours = find_neighbours(board, i, j)
-            if neighbours.count(1) in [0,1]: # Underpopulation
+        for j, _ in enumerate(row):
+            n = find_neighbours(board, i, j)
+            if n.count(1) in [0,1] or n.count(1) > 3: # Underpopulation or Overpopulation
                 new_board[i][j] = 0
                 continue
-            if neighbours.count(1) > 3: # Overpopulation
-                new_board[i][j] = 0
-                continue
-            if neighbours.count(1) == 3 and c == 0: # Reproduction
+            if n.count(1) == 3: # Reproduction
                 new_board[i][j] = 1
     return new_board
 
@@ -52,10 +50,12 @@ if __name__ == '__main__':
     scale = 2
     b = random_state(20, 15)
     while True:
+        system('cls')
         render(b)
         b = next_board_state(b)
-        sleep(0.3)
         if b == next_board_state(b) or b == next_board_state(next_board_state(b)):
+            system('cls')
             render(next_board_state(b))
+            system('cls')
             render(next_board_state(b))
             break

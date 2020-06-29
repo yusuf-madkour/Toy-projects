@@ -4,9 +4,9 @@ from life import next_board_state
 
 def test(actual, expected):
     if expected == actual:
-        print ("PASSED 1")
+        print ("PASSED")
     else:
-        print ("FAILED 1!")
+        print ("FAILED!")
         print ("Expected:")
         print (expected)
         print ("Actual:")
@@ -44,3 +44,16 @@ if __name__ == "__main__":
     actual_next_state2 = next_board_state(init_state2)
     test(actual_next_state2, expected_next_state2)
     
+    # TEST 3: Alive cells with more than 3 neighbours should become dead
+    init_state3 = [
+        [1,1,1],
+        [0,1,1],
+        [0,0,0]
+    ]
+    expected_next_state3 = [
+        [1,0,1],
+        [1,0,1],
+        [0,0,0]
+    ]
+    actual_next_state3 = next_board_state(init_state3)
+    test(actual_next_state3, expected_next_state3)

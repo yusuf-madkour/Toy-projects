@@ -1,9 +1,11 @@
 import argparse
-from random import choices
+from random import choices, seed
 from colorama import Fore, init
 from copy import deepcopy
 from time import sleep
 from os import system
+
+seed(42)
 
 def random_state(width, length):
     return [choices([0, 1], k=width, weights=[1-args.thresh, args.thresh]) for _ in range(length)]
@@ -23,23 +25,19 @@ def render(board):
     b += Fore.WHITE + '-' * (args.scale * len(board[0])+2) + '\n'
     print(b)
 
-
 def find_neighbours(brd):
-    # TODO: refactor this mess of a function
-    allns = deepcopy(brd)
+    ns = [[[] for cell in row] for row in brd]
     for i, row in enumerate(brd):
         for j, _ in enumerate(row):
-            ns = []
             if i > 0:
-                ns += brd[i-1][max(0, j-1):j+2]
+                ns[i][j].extend(brd[i-1][max(0, j-1):j+2])
             if i < len(brd)-1:
-                ns += brd[i+1][max(0, j-1):j+2]
+                ns[i][j].extend(brd[i+1][max(0, j-1):j+2])
             if j > 0:
-                ns.append(brd[i][j-1])
+                ns[i][j].append(brd[i][j-1])
             if j < len(brd[i])-1:
-                ns.append(brd[i][j+1])
-            allns[i][j] = ns
-    return allns
+                ns[i][j].append(brd[i][j+1])
+    return ns
 
 def next_board_state(board):
     n = find_neighbours(board)
@@ -81,12 +79,15 @@ if __name__ == '__main__':
 
     # Board initialization
     b = random_state(args.width, args.length)
-
+    i = 0
     while not (b == next_board_state(b) or b == next_board_state(next_board_state(b))):
         render(b)
         sleep(args.sleep)
         b = next_board_state(b)
-        system('cls')
-    render(next_board_state(b))
-    system('cls')
-    render(next_board_state(b))
+        # system('cls')
+        i += 1
+        if i == 3: break
+    # render(next_board_state(b))
+    # system('cls')
+    # render(next_board_state(b))
+

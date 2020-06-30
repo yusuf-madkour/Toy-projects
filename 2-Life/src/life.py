@@ -9,7 +9,7 @@ from os import system
 def random_state(width, length):
     """ TODO: Change the random generation process so that it operates on a
               threshold to favor dead over alive or alive over dead"""
-    return [choices([0, 1], k=width) for _ in range(length)]
+    return [choices([0, 1], k=width, weights=[1-args.thresh, args.thresh]) for _ in range(length)]
 
 
 def render(board):
@@ -56,13 +56,13 @@ def next_board_state(board):
     return new_board
 
 
-text = {'general': 'This is my guided implementation of "Conway\'s Game of Life", guided by Robert Heaton.',
-        'scale': 'scales the width of the board by given multiplier, scale value must be of type integer',
-        'width': 'specify width of the board, must be integer',
-        'length': 'specify length of the board, must be integer',
-        'sleep': 'specify sleep time after every board render, values are expected to be float (in seconds)',
-        'threshold': 'Favor one state over the other'
-        }
+text = {
+    'general': 'This is my guided implementation of "Conway\'s Game of Life", guided by Robert Heaton.',
+    'scale': 'scales the width of the board by given multiplier, scale value must be of type integer',
+    'width': 'specify width of the board, must be integer',
+    'length': 'specify length of the board, must be integer',
+    'sleep': 'specify sleep time after every board render, values are expected to be float (in seconds)',
+    'threshold': 'Favor alive state over dead, higher threshold results in higher probability of alive cells in the board'}
 
 if __name__ == '__main__':
     init()  # Initializing colorama
@@ -77,6 +77,8 @@ if __name__ == '__main__':
         '-l', '--length', help=text['length'], type=int, default=30, metavar="")
     parser.add_argument(
         '-sl', '--sleep', help=text['sleep'], type=float, default=0.1, metavar="")
+    parser.add_argument(
+        '-t', '--thresh', help=text['threshold'], type=float, default=0.5, metavar="")
     args = parser.parse_args()
 
     # Board initialization

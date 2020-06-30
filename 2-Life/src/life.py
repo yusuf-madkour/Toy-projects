@@ -5,56 +5,54 @@ from copy import deepcopy
 from time import sleep
 from os import system
 
-
 def random_state(width, length):
-    """ TODO: Change the random generation process so that it operates on a
-              threshold to favor dead over alive or alive over dead"""
     return [choices([0, 1], k=width, weights=[1-args.thresh, args.thresh]) for _ in range(length)]
 
 
 def render(board):
-    # TODO: Refactor function so that it prints the board in one go instead of row by row
-    print(Fore.WHITE + '-' * (args.scale * len(board[0])+2))
+    b = ''
+    b += Fore.WHITE + '-' * (args.scale * len(board[0])+2) + '\n'
     for row in board:
-        print(Fore.WHITE + '|', end='')
+        b += Fore.WHITE + '|'
         for c in row:
             if c == 1:
-                print(Fore.GREEN + '#' * args.scale, end='')
+                b += Fore.GREEN + '#' * args.scale
             else:
-                print(Fore.RED + '#' * args.scale, end='')
-        print(Fore.WHITE + '|')
-    print(Fore.WHITE + '-' * (args.scale * len(board[0])+2))
+                b += Fore.RED + '#' * args.scale
+        b += Fore.WHITE + '|' + '\n'
+    b += Fore.WHITE + '-' * (args.scale * len(board[0])+2) + '\n'
+    print(b)
 
 
-def find_neighbours(brd, i, j):
-    """ TODO: Refactor the function so that it takes the whole board and 
-             returns all the neighbours in one go"""
-    ns = []
-    if i > 0:
-        ns += brd[i-1][max(0, j-1):j+2]
-    if i < len(brd)-1:
-        ns += brd[i+1][max(0, j-1):j+2]
-    if j > 0:
-        ns.append(brd[i][j-1])
-    if j < len(brd[i])-1:
-        ns.append(brd[i][j+1])
-    return ns
-
+def find_neighbours(brd):
+    # TODO: refactor this mess of a function
+    allns = deepcopy(brd)
+    for i, row in enumerate(brd):
+        for j, _ in enumerate(row):
+            ns = []
+            if i > 0:
+                ns += brd[i-1][max(0, j-1):j+2]
+            if i < len(brd)-1:
+                ns += brd[i+1][max(0, j-1):j+2]
+            if j > 0:
+                ns.append(brd[i][j-1])
+            if j < len(brd[i])-1:
+                ns.append(brd[i][j+1])
+            allns[i][j] = ns
+    return allns
 
 def next_board_state(board):
-    # TODO: apply changes made in the find_neighbours function here
+    n = find_neighbours(board)
     new_board = deepcopy(board)
     for i, row in enumerate(board):
         for j, _ in enumerate(row):
-            n = find_neighbours(board, i, j)
             # Underpopulation or Overpopulation
-            if n.count(1) in [0, 1] or n.count(1) > 3:
+            if n[i][j].count(1) in [0, 1] or n[i][j].count(1) > 3:
                 new_board[i][j] = 0
                 continue
-            if n.count(1) == 3:  # Reproduction
+            if n[i][j].count(1) == 3:  # Reproduction
                 new_board[i][j] = 1
     return new_board
-
 
 text = {
     'general': 'This is my guided implementation of "Conway\'s Game of Life", guided by Robert Heaton.',
@@ -62,7 +60,7 @@ text = {
     'width': 'specify width of the board, must be integer',
     'length': 'specify length of the board, must be integer',
     'sleep': 'specify sleep time after every board render, values are expected to be float (in seconds)',
-    'threshold': 'Favor alive state over dead, higher threshold results in higher probability of alive cells in the board'}
+    'threshold': 'Higher threshold results in higher probability of alive cells in the board'}
 
 if __name__ == '__main__':
     init()  # Initializing colorama
@@ -76,7 +74,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '-l', '--length', help=text['length'], type=int, default=30, metavar="")
     parser.add_argument(
-        '-sl', '--sleep', help=text['sleep'], type=float, default=0.1, metavar="")
+        '-sl', '--sleep', help=text['sleep'], type=float, default=0.3, metavar="")
     parser.add_argument(
         '-t', '--thresh', help=text['threshold'], type=float, default=0.5, metavar="")
     args = parser.parse_args()
@@ -85,8 +83,8 @@ if __name__ == '__main__':
     b = random_state(args.width, args.length)
 
     while not (b == next_board_state(b) or b == next_board_state(next_board_state(b))):
-        sleep(args.sleep)
         render(b)
+        sleep(args.sleep)
         b = next_board_state(b)
         system('cls')
     render(next_board_state(b))

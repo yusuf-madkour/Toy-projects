@@ -1,9 +1,4 @@
-"""
-Created on Mon Jun 15 04:48:22 2020
-
-@author: Yusuf Madkour
-"""
-# Imports
+## Imports ##
 import getopt
 import sys
 import numpy as np
@@ -12,12 +7,12 @@ from skimage.io import imread
 from skimage.transform import resize
 
 if __name__ == "__main__":
-    # Script parameters' defaults
+    ## Script parameters' defaults ##
     inv = False
     mode = 'average'
     color = Fore.WHITE
 
-    # Arguments' handling
+    ## Arguments' handling ##
     argument_list = sys.argv[1:]
     short_options = "f:c:im:"
     long_options = ["file=", "color=", "inv", "mode="]
@@ -30,7 +25,7 @@ if __name__ == "__main__":
 
     for current_argument, current_value in arguments:
         if current_argument in ("-f", "--file"):
-            image_path = current_value  # Image name, image has to be in the same directory if full path was not passed
+            image_path = current_value
         elif current_argument in ("-c", "--color"):
             colors = {'white': Fore.WHITE, 'green': Fore.GREEN,
                       'red': Fore.RED, 'blue': Fore.BLUE}
@@ -41,16 +36,20 @@ if __name__ == "__main__":
         elif current_argument in ("-m", "--mode"):
             mode = current_value.lower()
 
-    # Converting images' pixels to ASCII characters
+    ## Converting images' pixels to ASCII characters ##
+
     # These are ASCII characters sorted in ascending order from least to most bright
     ascii = "`^\",:;Il!i~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$"
+
     # Converting to avoid overflow warning when computing pixel brightness values
     pixel_array = np.uint16(imread(image_path))
-    # Double check that preserve_range and anti_aliasing actually do something
+
+    # TODO: Double check that preserve_range and anti_aliasing actually do something
     pixel_array = resize(pixel_array, (320, 240),
                          preserve_range=True, anti_aliasing=True)
+
     print("Successfully loaded image!")
-    print(f"Image size: {pixel_array.shape}")
+
     height, width = pixel_array.shape[0], pixel_array.shape[1]
     init()  # Initializing colorama
 
@@ -66,10 +65,11 @@ if __name__ == "__main__":
 
     print("Converting to brightness matrix...")
 
-    # This nested list comprehension maps each pixel to the suitable ascii character based on the pixel's brightness
+    # This nested list comprehension maps each pixel to the suitable ascii character based on the pixel's brightness and mode
     converted_image = [[ascii[int(modes[mode](pixel) / 255 * 64)]
                         for pixel in row] for row in pixel_array]
-
+    
+    ## Printing image to terminal ##
     print(f"printing image in {mode} mode")
     # Printing image, one row at a time
     for row in converted_image:

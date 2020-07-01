@@ -1,4 +1,4 @@
-# asciiart
+# ASCII art
 
 asciiart.py is a Python script that draws an image in terminal using ASCII characters. It is a toy project inspired by [Robert Heaton's Programming Projects for Advanced Beginners](https://robertheaton.com/2018/12/08/programming-projects-for-advanced-beginners/).
 

@@ -1,3 +1,5 @@
-scikit_image==0.16.2
 numpy==1.18.1
 colorama==0.4.1
+PyAutoGUI==0.9.50
+scikit_image==0.16.2
+skimage==0.0

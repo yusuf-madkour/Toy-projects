@@ -33,9 +33,12 @@ positional arguments:
 
 optional arguments:
   -h, --help      show this help message and exit
+  
   -m , --mode     Choose brightness mode, available options are average,
                   lightness and luminosity. Default is average.
+                  
   -i, --inverted  Render the image inverted.
+  
   -c , --color    Choose a color you want the image to be rendered in, default
                   is white.
 

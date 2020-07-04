@@ -4,13 +4,22 @@ import numpy as np
 from colorama import Fore, init
 from skimage.io import imread
 from skimage.transform import resize
+import pyautogui as pag
+import ctypes
+import os
 
 text = {
     'general': 'This is my guided implementation of ASCII image renderer, guided by Robert Heaton.',
-    'file': 'path to the image you want to render',
+    'file': 'path to the image you want to render, it is a positional argument that must be passed first.',
     'mode': 'Choose brightness mode, available options are average, lightness and luminosity. Default is average.',
     'inverted': 'Render the image inverted',
-    'color': 'Choose a color you want the image to be rendered in, default is green.'}
+    'color': 'Choose a color you want the image to be rendered in, default is white.'}
+
+user32 = ctypes.WinDLL('user32')
+def resize_cmd(size):
+    hWnd = user32.GetForegroundWindow()
+    user32.ShowWindow(hWnd, size)
+
 
 if __name__ == "__main__":
 
@@ -28,7 +37,7 @@ if __name__ == "__main__":
     colors = {'white': Fore.WHITE, 'green': Fore.GREEN,
               'red': Fore.RED, 'blue': Fore.BLUE}
     color = colors.get(args.color.lower(),
-                       Fore.GREEN)  # Colorama's color
+                       Fore.WHITE)  # Colorama's color
 
     ## Converting images' pixels to ASCII characters ##
 
@@ -38,12 +47,11 @@ if __name__ == "__main__":
     # Converting to avoid overflow warning when computing pixel brightness values
     pixel_array = np.uint16(imread(args.file))
 
-    # pixel_array = resize(pixel_array, (120, 240),
-    #                      preserve_range=True, anti_aliasing=True)
+    pixel_array = resize(pixel_array, (64, 256),
+                         preserve_range=True, anti_aliasing=True)
 
     print("Successfully loaded image!")
 
-    height, width = pixel_array.shape[0], pixel_array.shape[1]
     init()  # Initializing colorama
 
     # Inverting colors if inv flag is passed to the script
@@ -64,7 +72,29 @@ if __name__ == "__main__":
                         for pixel in row] for row in pixel_array]
 
     ## Printing image to terminal ##
-    print(f"printing image in {mode} mode")
+    print(f"printing image in {args.mode} mode")
     # Printing image, one row at a time
     for row in converted_image:
         print(color + "".join(char for char in row))
+
+    if os.name == 'nt':
+        # Maximize
+        resize_cmd(3)
+
+        # Zoom out
+        pag.keyDown('ctrl')
+        pag.scroll(-1000)
+        pag.scroll(-1000)
+        pag.scroll(-1000)
+        pag.scroll(-1000)
+        pag.keyUp('ctrl')
+
+        # Minimize
+        resize_cmd(1)
+
+        # Maximize
+        resize_cmd(3)
+
+        # Scroll up
+        pag.scroll(2500)
+        pag.scroll(2000)

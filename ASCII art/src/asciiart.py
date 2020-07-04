@@ -6,7 +6,9 @@ from skimage.io import imread
 from skimage.transform import resize
 import pyautogui as pag
 import ctypes
-import os
+import os, sys
+
+# pag.PAUSE = 0.01
 
 text = {
     'general': 'This is my guided implementation of ASCII image renderer, guided by Robert Heaton.',
@@ -44,13 +46,17 @@ if __name__ == "__main__":
     # These are ASCII characters sorted in ascending order from least to most bright
     ascii = "`^\",:;Il!i~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$"
 
-    # Converting to avoid overflow warning when computing pixel brightness values
-    pixel_array = np.uint16(imread(args.file))
+    # Trying to read image
+    try:
+        im = imread(args.file)
+    except FileNotFoundError:
+        print("Image path is invalid")
+        sys.exit(2)
 
+    # Converting to avoid overflow warning when computing pixel brightness values
+    pixel_array = np.uint16(im)
     pixel_array = resize(pixel_array, (128, 256),
                          preserve_range=True, anti_aliasing=True)
-
-    print("Successfully loaded image!")
 
     init()  # Initializing colorama
 
@@ -64,29 +70,26 @@ if __name__ == "__main__":
              'luminosity': lambda p: 0.299 * p[0] + 0.587 * p[1] + 0.114 * p[2]
              }
 
-    print("Converting to brightness matrix...")
-
     # This nested list comprehension maps each pixel to the suitable ascii character based on the pixel's brightness and mode
     mode = modes.get(args.mode, modes['average'])
     converted_image = [[ascii[int(mode(pixel) / 255 * 64)]
                         for pixel in row] for row in pixel_array]
 
     ## Printing image to terminal ##
-    print(f"printing image in {args.mode} mode")
+
     # Printing image, one row at a time
     for row in converted_image:
         print(color + "".join(char for char in row))
 
+    ## Resizing cmd window to fit the image ##
     if os.name == 'nt':
         # Maximize
         resize_cmd(3)
 
         # Zoom out
         pag.keyDown('ctrl')
-        pag.scroll(-1000)
-        pag.scroll(-1000)
-        pag.scroll(-1000)
-        pag.scroll(-1000)
+        for _ in range(0,4):
+            pag.scroll(-1000)
         pag.keyUp('ctrl')
 
         # Minimize
@@ -96,5 +99,4 @@ if __name__ == "__main__":
         resize_cmd(3)
 
         # Scroll up
-        pag.scroll(2500)
-        pag.scroll(2000)
+        pag.scroll(4500)

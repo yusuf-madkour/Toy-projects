@@ -47,7 +47,7 @@ if __name__ == "__main__":
     # Converting to avoid overflow warning when computing pixel brightness values
     pixel_array = np.uint16(imread(args.file))
 
-    pixel_array = resize(pixel_array, (64, 256),
+    pixel_array = resize(pixel_array, (128, 256),
                          preserve_range=True, anti_aliasing=True)
 
     print("Successfully loaded image!")

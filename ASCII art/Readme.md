@@ -30,6 +30,7 @@ asciiart.py [-h] [-m] [-i] [-c]
 Required arguments: The path to the image you want to render.
 
 Optional arguments:
+
   -h, --help      Show this help message and exit
   
   -m , --mode     Choose brightness mode, available options are average,

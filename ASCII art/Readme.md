@@ -28,11 +28,10 @@ python asciiart.py /path/to/file
 asciiart.py [-h] [-m] [-i] [-c]
 
 positional arguments:
-                  path to the image you want to render, it is a positional
-                  argument that must be passed first.
+                  The path to the image you want to render.
 
 optional arguments:
-  -h, --help      show this help message and exit
+  -h, --help      Show this help message and exit
   
   -m , --mode     Choose brightness mode, available options are average,
                   lightness and luminosity. Default is average.

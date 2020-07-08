@@ -5,12 +5,12 @@ def new_board():
 
 
 def render(board):
-    print('-------')
+    print('+-----+')
     for row in board:
         print('|', end="")
         print(*row, sep=' ', end='')
         print('|')
-    print('-------')
+    print('+-----+')
 
 
 def get_move(board):
@@ -30,7 +30,6 @@ def make_move(board, coord, player):
         print('Cell already full, please try again.')
         coord = get_move(board)
     board[coord[0]][coord[1]] = player
-    render(board)
     return board
 
 
@@ -64,8 +63,10 @@ if __name__ == "__main__":
         board = make_move(board, coords, player)
         if get_winner(board):
             print(f"Player {get_winner(board)} is the champion")
+            render(board)
             break
         if full_board(board):
             print('We have a draw')
+            render(board)
             break
         player = 'O' if player == 'X' else 'X'

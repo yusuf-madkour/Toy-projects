@@ -2,6 +2,7 @@ from random import choice
 from colorama import Fore, init
 from os import system
 import platform
+from time import sleep
 
 maps = {'1': (0, 0), '2': (0, 1), '3': (0, 2),
         '4': (1, 0), '5': (1, 1), '6': (1, 2),
@@ -36,12 +37,12 @@ def render(board):
             else:
                 print(c, end='')
             if i != 2:
-                print(' ', end = "")
+                print(' ', end="")
         print(cyan + '|')
     print(cyan + '+-----+')
 
 
-def get_move(board):
+def human_player(board, player):
     print(f"Player {player}, what is your move?")
     n = input()
     while n not in maps:
@@ -52,7 +53,30 @@ def get_move(board):
     return maps[n]
 
 
-def random_ai(board):
+def finds_winning_and_losing_moves_ai(board, player):
+    lines = get_lines(board)
+    enemy = 'X' if player == 'O' else 'O'
+    for line in lines:
+        if line.count(player) == 2 and line.count(enemy) == 0:
+            [winning_move] = [i for i in line if i != player]
+            return maps[winning_move]
+    for line in lines:
+        if line.count(enemy) == 2 and line.count(player) == 0:
+            [blocking_move] = [i for i in line if i != enemy]
+            return maps[blocking_move]
+    return random_ai(board, player)
+
+
+def finds_winning_moves_ai(board, player):
+    lines = get_lines(board)
+    for line in lines:
+        if line.count(player) == 2 and any(i.isnumeric() for i in line):
+            [winning_move] = [i for i in line if i.isnumeric()]
+            return maps[winning_move]
+    return random_ai(board, player)
+
+
+def random_ai(board, player):
     legal = [i for row in board for i in row if i not in ["X", "O"]]
     return maps[choice(legal)]
 
@@ -61,7 +85,7 @@ def make_move(board, coord, player):
     while board[coord[0]][coord[1]] in ['X', 'O']:
         render(board)
         print('Cell already full, please try again.')
-        coord = get_move(board)
+        coord = human_player(board, player)
     board[coord[0]][coord[1]] = player
     return board
 
@@ -88,18 +112,18 @@ if __name__ == "__main__":
     red = Fore.RED
     green = Fore.GREEN
 
-    player = choice(['O', 'X']) # Randomly choose who plays first
+    player = choice(['O', 'X'])  # Randomly choose who plays first
     board = new_board()
     while True:
         render(board)
-        coords = random_ai(board) if player == 'X' else get_move(board)
+        coords = human_player(board, player)
         board = make_move(board, coords, player)
         if get_winner(board):
             render(board)
-            print(f"Player {get_winner(board)} wins")
+            print(f"Player {get_winner(board)} wins", end='')
             break
         if full_board(board):
             render(board)
-            print('Draw!!')
+            print('Draw!!', end='')
             break
         player = 'O' if player == 'X' else 'X'

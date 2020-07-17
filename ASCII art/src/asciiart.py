@@ -11,11 +11,11 @@ import os, sys
 # pag.PAUSE = 0.01
 
 text = {
-    'general': 'This is my guided implementation of ASCII image renderer, guided by Robert Heaton.',
-    'file': 'path to the image you want to render, it is a positional argument that must be passed first.',
-    'mode': 'Choose brightness mode, available options are average, lightness and luminosity. Default is average.',
+    'general': 'This is my guided implementation of ASCII image renderer, guided by Robert Heaton',
+    'file': 'The absolute path to the image you want to render',
+    'mode': 'Choose brightness mode, available options are average, lightness and luminosity. Default is average',
     'inverted': 'Render the image inverted',
-    'color': 'Choose a color you want the image to be rendered in, default is white.'}
+    'color': 'Choose a color you want the image to be rendered in, default is white'}
 
 user32 = ctypes.WinDLL('user32')
 def resize_cmd(size):
@@ -27,13 +27,13 @@ if __name__ == "__main__":
 
     ## Arguments' handling ##
     parser = argparse.ArgumentParser(description=text['general'])
+    parser.add_argument('file', help=text['file'], type=str)
     parser.add_argument(
         '-m', '--mode', help=text['mode'], type=str, default='luminosity', metavar="")
     parser.add_argument('-i',
                         '--inverted', help=text['inverted'], action='store_true')
     parser.add_argument(
         '-c', '--color', help=text['color'], type=str, default='white', metavar="")
-    parser.add_argument('file', help=text['file'], type=str, metavar="")
     args = parser.parse_args()
 
     colors = {'white': Fore.WHITE, 'green': Fore.GREEN,
@@ -88,7 +88,7 @@ if __name__ == "__main__":
 
         # Zoom out
         pag.keyDown('ctrl')
-        for _ in range(0,4):
+        for _ in range(4):
             pag.scroll(-1000)
         pag.keyUp('ctrl')
 

@@ -1,4 +1,3 @@
-## Imports ##
 import argparse
 import numpy as np
 from colorama import Fore, init
@@ -6,9 +5,8 @@ from skimage.io import imread
 from skimage.transform import resize
 import pyautogui as pag
 import ctypes
-import os, sys
-
-# pag.PAUSE = 0.01
+import os
+import sys
 
 text = {
     'general': 'This is my guided implementation of ASCII image renderer, guided by Robert Heaton',
@@ -18,9 +16,11 @@ text = {
     'color': 'Choose a color you want the image to be rendered in, default is white'}
 
 user32 = ctypes.WinDLL('user32')
+
+
 def resize_cmd(size):
-    hWnd = user32.GetForegroundWindow()
-    user32.ShowWindow(hWnd, size)
+    fore_window = user32.GetForegroundWindow()
+    user32.ShowWindow(fore_window, size)
 
 
 if __name__ == "__main__":

@@ -316,8 +316,8 @@ if __name__ == "__main__":
                   '1': finds_winning_moves_ai,
                   '2': finds_winning_and_losing_moves_ai}
     args = parse_arguments()
-    x = strategies.get(args.playerX, human_player)
-    o = strategies.get(args.playerO, finds_winning_and_losing_moves_ai)
+    x = strategies[args.playerX]
+    o = strategies[args.playerO]
 
     result = play(x, o)
     print(result) if result == 'Draw' else print(f"{result} wins")

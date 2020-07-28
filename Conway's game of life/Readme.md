@@ -4,13 +4,6 @@ life.py is a Python script that simulates [Conway's game of life](https://en.wik
 
 ![](https://github.com/yusuf-madkour/toy-projects/blob/master/Conway's%20game%20of%20life/demo.gif)
 
-## Installation
-
-Install requirements as shown below before running the script
-
-```bash
-pip install -r requirements.txt
-```
 
 ## Usage
 

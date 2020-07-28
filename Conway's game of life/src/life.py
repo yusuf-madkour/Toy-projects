@@ -1,10 +1,10 @@
-from argparse import ArgumentParser
-from random import choices
-from colorama import Fore, init
+import curses
+from argparse import ArgumentParser, ArgumentTypeError
 from copy import deepcopy
+from random import choices
 from time import sleep
-import os
-import platform
+
+PC = '$'  # This is the Printed Character that represents a single cell
 
 
 def random_state(width, length, prob):
@@ -16,11 +16,12 @@ def random_state(width, length, prob):
     ----------
     width: width of the board, in cells
     length: length of the board, in cells
-    prob: probability of alive cells in the board
+    prob: probability of a cell being alive
 
     Returns
     -------
-    A board of dimension width x length with specific probability of alive cells in the board
+    A board of dimension width x length with specific probability of cells
+    being alive
     """
     return [choices([0, 1], k=width, weights=[1-prob, prob]) for _ in range(length)]
 
@@ -44,7 +45,7 @@ def load_board_state(filename):
             return [[int(c) for c in row.rstrip('\n')] for row in f.readlines()]
     except FileNotFoundError:
         print("File does not exist, generating a random pattern...")
-        sleep(5)
+        sleep(3)
         return random_state(args.width, args.length, args.prob)
 
 
@@ -60,18 +61,21 @@ def render(board):
     -------
     Nothing
     """
-    b = ''
-    b += Fore.WHITE + '-' * (args.scale * len(board[0])+2) + '\n'
+    screen.addstr(
+        '=' * (args.scale * len(board[0])+2) + '\n', curses.A_BOLD)
     for row in board:
-        b += Fore.WHITE + '|'
+        screen.addstr('|', curses.A_BOLD)
         for c in row:
             if c == 1:
-                b += Fore.CYAN + PC * args.scale
+                screen.addstr(PC * args.scale, curses.color_pair(2))
             else:
-                b += Fore.MAGENTA + PC * args.scale
-        b += Fore.WHITE + '|' + '\n'
-    b += Fore.WHITE + '-' * (args.scale * len(board[0])+2) + '\n'
-    print(b)
+                screen.addstr(PC * args.scale, curses.color_pair(1))
+        screen.addstr('|' + '\n', curses.A_BOLD)
+    screen.addstr(
+        '=' * (args.scale * len(board[0])+2) + '\n', curses.A_BOLD)
+    screen.refresh()
+    curses.napms(int(args.sleep*1000))
+    screen.clear()
 
 
 def moore_neighbours(board):
@@ -84,24 +88,24 @@ def moore_neighbours(board):
 
     Returns
     -------
-    Neighbours of all cells, it returns a list of lists with the same 
+    Neighbours of all cells, it returns a list of lists with the same
     dimensions of the board but containing lists of neighbours instead of cell values
     """
-    ns = [[[] for _ in row] for row in board]
+    neighbours = [[[] for _ in row] for row in board]
     for i, row in enumerate(board):
         for j, _ in enumerate(row):
             if i > 0:
-                ns[i][j].extend(board[i-1][max(0, j-1):j+2])
+                neighbours[i][j].extend(board[i-1][max(0, j-1):j+2])
             if i < len(board)-1:
-                ns[i][j].extend(board[i+1][max(0, j-1):j+2])
+                neighbours[i][j].extend(board[i+1][max(0, j-1):j+2])
             if j > 0:
-                ns[i][j].append(board[i][j-1])
+                neighbours[i][j].append(board[i][j-1])
             if j < len(board[i])-1:
-                ns[i][j].append(board[i][j+1])
-    return ns
+                neighbours[i][j].append(board[i][j+1])
+    return neighbours
 
 
-def next_board_state(board):
+def next_state(board):
     """
     Calculates the next state of the board based on the current state.
     Effectively takes a single step in the game of life.
@@ -114,17 +118,37 @@ def next_board_state(board):
     -------
     The next state of the board represented as a list of lists
     """
-    n = moore_neighbours(board)
+    neighbours = moore_neighbours(board)
     new_board = deepcopy(board)
     for i, row in enumerate(board):
         for j, _ in enumerate(row):
             # Underpopulation or Overpopulation
-            if n[i][j].count(1) in [0, 1] or n[i][j].count(1) > 3:
+            if neighbours[i][j].count(1) in [0, 1] or neighbours[i][j].count(1) > 3:
                 new_board[i][j] = 0
                 continue
-            if n[i][j].count(1) == 3:  # Reproduction
+            if neighbours[i][j].count(1) == 3:  # Reproduction
                 new_board[i][j] = 1
     return new_board
+
+
+def probability(x):
+    """
+    This is a custom type function for the argument parser, it checks the
+    passed probability value and verifies that it is a valid probability
+    between 0 and 1.
+
+    Parameters
+    ----------
+    x: parsed probability value
+
+    Returns
+    -------
+    The value if it is a valid probability and raises an exception if it isn't.
+    """
+    x = float(x)
+    if not 0 < x < 1:
+        raise ArgumentTypeError("Not a valid probability")
+    return x
 
 
 def parse_arguments():
@@ -146,33 +170,48 @@ def parse_arguments():
     parser.add_argument(
         '-sc', '--scale', help=txt['scale'], type=int, default=2, metavar="")
     parser.add_argument(
-        '-w', '--width', help=txt['width'], type=int, default=30, metavar="")
+        '-w', '--width', help=txt['width'], type=int, default=20, metavar="")
     parser.add_argument(
-        '-l', '--length', help=txt['length'], type=int, default=30, metavar="")
+        '-l', '--length', help=txt['length'], type=int, default=20, metavar="")
     parser.add_argument(
-        '-sl', '--sleep', help=txt['sleep'], type=float, default=0, metavar="")
+        '-sl', '--sleep', help=txt['sleep'], type=float, default=0.05, metavar="")
     parser.add_argument(
-        '-pb', '--prob', help=txt['prob'], type=float, default=0.5, metavar="")
+        '-pb', '--prob', help=txt['prob'], type=probability, default=0.3, metavar="")
     parser.add_argument(
         '-p', '--pattern', help=txt['pattern'], type=str, metavar="")
-
     return parser.parse_args()
 
 
+def init_curses():
+    """
+    This function initializes the screen and prepares the colors for printing
+    dead and live cells
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    curses screen
+    """
+    screen = curses.initscr()
+    curses.start_color()
+    curses.init_pair(1, curses.COLOR_MAGENTA, curses.COLOR_MAGENTA)
+    curses.init_pair(2, curses.COLOR_GREEN, curses.COLOR_GREEN)
+    return screen
+
+
 if __name__ == '__main__':
-    init(autoreset=True)  # Initializing colorama
-
     args = parse_arguments()
-
-    CLEAR_COMMAND = 'cls' if platform.system() == 'Windows' else 'clear'
-
+    screen = init_curses()
     # Board initialization
-    b = load_board_state(args.pattern) if args.pattern else random_state(
-        args.width, args.length, args.prob)
-    PC = '%'  # This is the Printed Character that represents a single cell
-    while b != next_board_state(b):
-        render(b)
-        sleep(args.sleep)
-        b = next_board_state(b)
-        os.system(CLEAR_COMMAND)
-    render(next_board_state(b))
+    if args.pattern:
+        board = load_board_state(args.pattern)
+    else:
+        board = random_state(args.width, args.length, args.prob)
+
+    while board != next_state(board):
+        render(board)
+        board = next_state(board)
+    render(board)

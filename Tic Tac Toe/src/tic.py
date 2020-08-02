@@ -1,10 +1,10 @@
-from random import choice
-from colorama import Fore, init
 import os
 import platform
-from time import sleep
 from argparse import ArgumentParser
+from random import choice
+from time import sleep
 
+from colorama import Fore, init
 
 MAP_ = {'1': (0, 0), '2': (0, 1), '3': (0, 2),
         '4': (1, 0), '5': (1, 1), '6': (1, 2),
@@ -35,7 +35,7 @@ def new_board():
     return [['1', '2', '3'], ['4', '5', '6'], ['7', '8', '9']]
 
 
-def full_board(board):
+def is_full(board):
     """
     Checks if the Tic Tac Toe board is full. Full in the sense that no legal
     moves are available.
@@ -269,10 +269,10 @@ def parse_arguments():
                      2 algorithms play against each other. Strategy options\
                      are: "human", "0", "1" and "2". The numbers 0 through 2\
                      represent the sophistication level of the algorithm.')
-    parser.add_argument('-o', '--playerO', choices=strategies, metavar="",
-                        help='Choose strategy of player O')
-    parser.add_argument('-x', '--playerX', choices=strategies, metavar="",
-                        help='Choose strategy of player X')
+    parser.add_argument('-o', '--playerO', choices=strategies, default='0',
+                        metavar="", help='Choose strategy of player O')
+    parser.add_argument('-x', '--playerX', choices=strategies, default='human',
+                        metavar="", help='Choose strategy of player X')
     return parser.parse_args()
 
 
@@ -303,8 +303,8 @@ def play(x, o):
         board = make_move(board, coords, current_player)
         render(board)
         if get_winner(board):
-            return current_player
-        if full_board(board):
+            return f"{current_player} wins"
+        if is_full(board):
             return 'Draw'
         current_player = 'O' if current_player == 'X' else 'X'
 
@@ -318,6 +318,5 @@ if __name__ == "__main__":
     args = parse_arguments()
     x = strategies[args.playerX]
     o = strategies[args.playerO]
-
     result = play(x, o)
-    print(result) if result == 'Draw' else print(f"{result} wins")
+    print(result, end='')

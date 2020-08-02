@@ -63,6 +63,7 @@ def render(board):
     -------
     Nothing
     """
+    screen.clear()
     screen.addstr(
         '=' * (args.scale * len(board[0])+2) + '\n', curses.A_BOLD)
     for row in board:
@@ -77,7 +78,6 @@ def render(board):
         '=' * (args.scale * len(board[0])+2) + '\n', curses.A_BOLD)
     screen.refresh()
     curses.napms(int(args.sleep*1000))
-    screen.clear()
 
 
 def moore_neighbours(board):
@@ -227,5 +227,6 @@ if __name__ == '__main__':
             break
         board = next_state(board)
     render(board)
+    print("Press any character to exit...")
     c = screen.getch()
     curses.endwin()

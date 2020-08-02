@@ -319,4 +319,4 @@ if __name__ == "__main__":
     x = strategies[args.playerX]
     o = strategies[args.playerO]
     result = play(x, o)
-    print(result, end='')
+    print(result)

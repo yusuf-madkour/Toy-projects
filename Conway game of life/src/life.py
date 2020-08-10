@@ -182,7 +182,7 @@ def parse_arguments():
         "-l", "--length", help=txt["length"], type=int, default=15, metavar=""
     )
     parser.add_argument(
-        "-sl", "--sleep", help=txt["sleep"], default=0.1, type=float, metavar=""
+        "-sl", "--sleep", help=txt["sleep"], default=0.05, type=float, metavar=""
     )
     parser.add_argument(
         "-pb", "--prob", help=txt["proba"], type=prob, default=0.3, metavar=""
@@ -205,6 +205,7 @@ def init_screen():
     curses screen object
     """
     screen = curses.initscr()
+    screen.keypad(True)
     curses.start_color()
     curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_BLACK)
     curses.init_pair(2, curses.COLOR_CYAN, curses.COLOR_CYAN)
@@ -251,7 +252,7 @@ if __name__ == "__main__":
         board = random_state(args.width, args.length, args.prob)
     screen = init_screen()
     play(board, screen)
-    screen.addstr("Press any character to exit...")
+    screen.addstr("Terminal state reached, press any key to exit...")
     screen.refresh()
     curses.curs_set(1)
     screen.getch()

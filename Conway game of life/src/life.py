@@ -239,9 +239,6 @@ def play(board, screen):
         ):
             break
         board = next_state(board)
-    print("Press any character to exit...")
-    screen.getch()
-    curses.endwin()
 
 
 if __name__ == "__main__":
@@ -254,3 +251,8 @@ if __name__ == "__main__":
         board = random_state(args.width, args.length, args.prob)
     screen = init_screen()
     play(board, screen)
+    screen.addstr("Press any character to exit...")
+    screen.refresh()
+    curses.curs_set(1)
+    screen.getch()
+    curses.endwin()

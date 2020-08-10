@@ -2,7 +2,6 @@ import curses
 import argparse
 from copy import deepcopy
 from random import choices
-from time import sleep
 
 PC = "$"  # This is the Printed Character that represents a single cell
 
@@ -46,9 +45,13 @@ def load_board_state(filepath):
             lines = f.readlines()
             return [[int(c) for c in row.rstrip("\n")] for row in lines]
     except FileNotFoundError:
-        print("File does not exist, generating a random pattern...")
-        sleep(2)
-        return random_state(args.width, args.length, args.prob)
+        args.pattern = False
+        print("File does not exist")
+        i = input("Would you like to use a random pattern instead?")
+        if i in ["y", "Y", "Yes", "yes"]:
+            return random_state(args.width, args.length, args.prob)
+        else:
+            exit()
 
 
 def render(board):

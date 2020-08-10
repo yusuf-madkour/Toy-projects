@@ -20,19 +20,19 @@ python life.py
 
 ### Optional arguments
 
--h, --help       shows help message and exit
+-h , --help      Shows help message and exit
 
--sc , --scale    scales the width of the board by given multiplier, scale value must be of type integer
+-sc , --scale    Scales the width of the board by given multiplier
 
--w , --width     specify width of the board, must be integer
+-w , --width     The width of the board
 
--l , --length    specify length of the board, must be integer
+-l , --length    The length of the board
 
--sl , --sleep    specify sleep time after every board render, values should be float (in seconds)
+-sl , --sleep    Waiting time after each state render in seconds, can be float
 
--pb , --prob     Higher probability means higher probability of alive cells being generated in the board
+-pb , --prob     Probability of each cell being alive
 
--p , --pattern   pass the name of a text file that holds a 2d matrix of an initial state, file must be in the patterns folder
+-p , --pattern   The path to a text file containing a 2d matrix of an initial state
 
 ## License
 

@@ -4,18 +4,18 @@ from copy import deepcopy
 from random import choices
 from time import sleep
 
-PC = '$'  # This is the Printed Character that represents a single cell
+PC = "$"  # This is the Printed Character that represents a single cell
 
 
 def random_state(width, length, prob):
     """
-    Builds a board with all cells pseudo-randomly set. The board is
-    represented as a list of lists throughout the script.
+    Builds a board with the state of cells pseudo-randomly set.
+    The board is represented as a list of lists throughout the script.
 
     Parameters
     ----------
-    width: width of the board, in cells
-    length: length of the board, in cells
+    width: width of the board\n
+    length: length of the board\n
     prob: probability of a cell being alive
 
     Returns
@@ -23,8 +23,8 @@ def random_state(width, length, prob):
     A board of dimension width x length with specific probability of cells
     being alive
     """
-    return [choices([0, 1], k=width, weights=[1-prob, prob])
-            for _ in range(length)]
+    weights = [1 - prob, prob]
+    return [choices([0, 1], k=width, weights=weights) for _ in range(length)]
 
 
 def load_board_state(filepath):
@@ -35,19 +35,19 @@ def load_board_state(filepath):
 
     Parameters
     ----------
-    filename: name of the text file to load the board from
+    filepath: The path to the text file to load the board from
 
     Returns
     -------
     The board loaded from the text file represented as a list of lists
     """
     try:
-        with open(filepath, mode='r') as f:
+        with open(filepath, mode="r") as f:
             lines = f.readlines()
-            return [[int(c) for c in row.rstrip('\n')] for row in lines]
+            return [[int(c) for c in row.rstrip("\n")] for row in lines]
     except FileNotFoundError:
         print("File does not exist, generating a random pattern...")
-        sleep(3)
+        sleep(2)
         return random_state(args.width, args.length, args.prob)
 
 
@@ -64,20 +64,18 @@ def render(board):
     Nothing
     """
     screen.clear()
-    screen.addstr(
-        '=' * (args.scale * len(board[0])+2) + '\n', curses.A_BOLD)
+    screen.addstr("=" * (args.scale * len(board[0]) + 2) + "\n", curses.A_BOLD)
     for row in board:
-        screen.addstr('|', curses.A_BOLD)
+        screen.addstr("|", curses.A_BOLD)
         for c in row:
             if c == 1:
                 screen.addstr(PC * args.scale, curses.color_pair(2))
             else:
                 screen.addstr(PC * args.scale, curses.color_pair(1))
-        screen.addstr('|' + '\n', curses.A_BOLD)
-    screen.addstr(
-        '=' * (args.scale * len(board[0])+2) + '\n', curses.A_BOLD)
+        screen.addstr("|" + "\n", curses.A_BOLD)
+    screen.addstr("=" * (args.scale * len(board[0]) + 2) + "\n", curses.A_BOLD)
     screen.refresh()
-    curses.napms(int(args.sleep*1000))
+    curses.napms(int(args.sleep * 1000))
 
 
 def moore_neighbours(board):
@@ -98,13 +96,13 @@ def moore_neighbours(board):
     for i, row in enumerate(board):
         for j, _ in enumerate(row):
             if i > 0:
-                neighbours[i][j].extend(board[i-1][max(0, j-1):j+2])
-            if i < len(board)-1:
-                neighbours[i][j].extend(board[i+1][max(0, j-1):j+2])
+                neighbours[i][j].extend(board[i - 1][max(0, j - 1) : j + 2])
+            if i < len(board) - 1:
+                neighbours[i][j].extend(board[i + 1][max(0, j - 1) : j + 2])
             if j > 0:
-                neighbours[i][j].append(board[i][j-1])
-            if j < len(board[i])-1:
-                neighbours[i][j].append(board[i][j+1])
+                neighbours[i][j].append(board[i][j - 1])
+            if j < len(board[i]) - 1:
+                neighbours[i][j].append(board[i][j + 1])
     return neighbours
 
 
@@ -151,38 +149,42 @@ def prob(x):
     """
     x = float(x)
     if not 0 < x < 1:
-        raise argparse.ArgumentTypeError("Not a valid probability")
+        raise argparse.ArgumentTypeError("Probability should be between 0 and 1")
     return x
 
 
 def parse_arguments():
     txt = {
-        'general': 'This is my guided implementation of "Conway\'s \
-                Game of Life", guided by Robert Heaton.',
-        'scale': 'scales the width of the board by given multiplier,\
-              scale value must be an integer',
-        'width': 'The width of the board, must be an integer',
-        'len': 'The length of the board, must be an integer',
-        'slp': 'Waiting time after every board state render,\
-              values are expected to be float (in seconds)',
-        'prob': 'Probability of live cells being generated in the board',
-        'pattern': 'The path to a text file containing a 2d matrix\
-                of an initial state'}
+        "general": 'This is my guided implementation of "Conway\'s \
+                Game of Life", guided by Robert Heaton',
+        "scale": "Scales the width of the board by given multiplier",
+        "width": "The width of the board",
+        "length": "The length of the board",
+        "sleep": "Waiting time after each state render in seconds,\
+                can be float",
+        "proba": "Probability of each cell being alive",
+        "pattern": "The path to a text file containing a 2d matrix\
+                    of an initial state",
+    }
 
-    parser = argparse.ArgumentParser(description=txt['general'])
+    parser = argparse.ArgumentParser(description=txt["general"])
 
     parser.add_argument(
-        '-sc', '--scale', help=txt['scale'], type=int, default=2, metavar='')
+        "-sc", "--scale", help=txt["scale"], type=int, default=2, metavar=""
+    )
     parser.add_argument(
-        '-w', '--width', help=txt['width'], type=int, default=20, metavar='')
+        "-w", "--width", help=txt["width"], type=int, default=15, metavar=""
+    )
     parser.add_argument(
-        '-l', '--length', help=txt['len'], type=int, default=20, metavar='')
+        "-l", "--length", help=txt["length"], type=int, default=15, metavar=""
+    )
     parser.add_argument(
-        '-sl', '--sleep', help=txt['slp'], default=.1, type=float, metavar='')
+        "-sl", "--sleep", help=txt["sleep"], default=0.1, type=float, metavar=""
+    )
     parser.add_argument(
-        '-pb', '--prob', help=txt['prob'], type=prob, default=.3, metavar='')
-    parser.add_argument(
-        '-p', '--pattern', help=txt['pattern'], metavar='')
+        "-pb", "--prob", help=txt["proba"], type=prob, default=0.3, metavar=""
+    )
+    parser.add_argument("-p", "--pattern", help=txt["pattern"], metavar="")
     return parser.parse_args()
 
 
@@ -197,7 +199,7 @@ def init_screen():
 
     Returns
     -------
-    curses screen
+    curses screen object
     """
     screen = curses.initscr()
     curses.start_color()
@@ -207,26 +209,45 @@ def init_screen():
     return screen
 
 
-"""TODO Create a play function to run the game, it should be called under the
-next if block. After the game is over, ask the user if he wishes the game to
-be played again. Maybe even ask for the parameters for the new game.
-"""
+def play(board, screen):
+    """
+    This function runs Conway's game of life
 
-if __name__ == '__main__':
+    Parameters
+    ----------
+    board: A list of lists representing the current board state\n
+    screen: curses screen object
+
+    Returns
+    -------
+    Nothing
+    """
+    while True:
+        try:
+            render(board)
+        except curses.error:
+            curses.endwin()
+            print("Enlrage the terminal window or choose smaller dimensions")
+            exit()
+        # Run the game as long as the generated board is not repeating
+        if (
+            board in [next_state(board), next_state(next_state(board))]
+            and not args.pattern
+        ):
+            break
+        board = next_state(board)
+    print("Press any character to exit...")
+    screen.getch()
+    curses.endwin()
+
+
+if __name__ == "__main__":
+    # Parsing script arguments
     args = parse_arguments()
-    screen = init_screen()
     # Board initialization
     if args.pattern:
         board = load_board_state(args.pattern)
     else:
         board = random_state(args.width, args.length, args.prob)
-    while True:
-        render(board)
-        if board in [next_state(board), next_state(next_state(board))] and\
-                not args.pattern:
-            break
-        board = next_state(board)
-    render(board)
-    print("Press any character to exit...")
-    c = screen.getch()
-    curses.endwin()
+    screen = init_screen()
+    play(board, screen)

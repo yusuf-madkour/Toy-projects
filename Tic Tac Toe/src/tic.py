@@ -6,9 +6,17 @@ from time import sleep
 
 from colorama import Fore, init
 
-MAP_ = {'1': (0, 0), '2': (0, 1), '3': (0, 2),
-        '4': (1, 0), '5': (1, 1), '6': (1, 2),
-        '7': (2, 0), '8': (2, 1), '9': (2, 2)}
+MAP_ = {
+    "1": (0, 0),
+    "2": (0, 1),
+    "3": (0, 2),
+    "4": (1, 0),
+    "5": (1, 1),
+    "6": (1, 2),
+    "7": (2, 0),
+    "8": (2, 1),
+    "9": (2, 2),
+}
 
 # Colorama colors used in rendering the board
 CYAN = Fore.CYAN
@@ -16,7 +24,7 @@ RED = Fore.RED
 GREEN = Fore.GREEN
 
 WAIT = 0.2  # Wait time after each algorithm move
-CLEAR_COMMAND = 'cls' if platform.system() == 'Windows' else 'clear'
+CLEAR_COMMAND = "cls" if platform.system() == "Windows" else "clear"
 
 
 def new_board():
@@ -32,7 +40,7 @@ def new_board():
     -------
     A new game board as a list of lists, each list represents a row.
     """
-    return [['1', '2', '3'], ['4', '5', '6'], ['7', '8', '9']]
+    return [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"]]
 
 
 def is_full(board):
@@ -48,7 +56,7 @@ def is_full(board):
     -------
     True if the board is full and false otherwise
     """
-    return all([i in ['X', 'O'] for row in board for i in row])
+    return all([i in ["X", "O"] for row in board for i in row])
 
 
 def get_lines(board):
@@ -65,8 +73,9 @@ def get_lines(board):
     """
     rows = [board[0], board[1], board[2]]
     columns = [[board[row][col] for row in range(3)] for col in range(3)]
-    diagonals = [[board[0][0], board[1][1], board[2][2]]] +\
-                [[board[0][2], board[1][1], board[2][0]]]
+    diagonals = [[board[0][0], board[1][1], board[2][2]]] + [
+        [board[0][2], board[1][1], board[2][0]]
+    ]
     return rows + columns + diagonals
 
 
@@ -83,20 +92,20 @@ def render(board):
     None
     """
     os.system(CLEAR_COMMAND)
-    print(CYAN + '+-----+')
+    print(CYAN + "+-----+")
     for row in board:
-        print(CYAN + '|', end='')
+        print(CYAN + "|", end="")
         for i, c in enumerate(row):
-            if c == 'X':
-                print(RED + 'X', end='')
-            elif c == 'O':
-                print(GREEN + 'O', end='')
+            if c == "X":
+                print(RED + "X", end="")
+            elif c == "O":
+                print(GREEN + "O", end="")
             else:
-                print(c, end='')
+                print(c, end="")
             if i != 2:
-                print(' ', end="")
-        print(CYAN + '|')
-    print(CYAN + '+-----+')
+                print(" ", end="")
+        print(CYAN + "|")
+    print(CYAN + "+-----+")
 
 
 def get_input(board, player):
@@ -160,7 +169,7 @@ def finds_winning_and_losing_moves_ai(board, player):
     Board coordinates of chosen move.
     """
     lines = get_lines(board)
-    opponent = 'X' if player == 'O' else 'O'
+    opponent = "X" if player == "O" else "O"
     for line in lines:
         if line.count(player) == 2 and line.count(opponent) == 0:
             [winning_move] = [i for i in line if i != player]
@@ -244,10 +253,10 @@ def get_winner(board):
     """
     lines = get_lines(board)
     for line in lines:
-        if all(i == 'X' for i in line):
-            return 'X'
-        if all(i == 'O' for i in line):
-            return 'O'
+        if all(i == "X" for i in line):
+            return "X"
+        if all(i == "O" for i in line):
+            return "O"
     return None
 
 
@@ -268,11 +277,24 @@ def parse_arguments():
                      2player mode, 1player mode or you can sit back and watch\
                      2 algorithms play against each other. Strategy options\
                      are: "human", "0", "1" and "2". The numbers 0 through 2\
-                     represent the sophistication level of the algorithm.')
-    parser.add_argument('-o', '--playerO', choices=strategies, default='0',
-                        metavar="", help='Choose strategy of player O')
-    parser.add_argument('-x', '--playerX', choices=strategies, default='human',
-                        metavar="", help='Choose strategy of player X')
+                     represent the sophistication level of the algorithm.'
+    )
+    parser.add_argument(
+        "-o",
+        "--playerO",
+        choices=strategies,
+        default="0",
+        metavar="",
+        help="Choose strategy of player O",
+    )
+    parser.add_argument(
+        "-x",
+        "--playerX",
+        choices=strategies,
+        default="2",
+        metavar="",
+        help="Choose strategy of player X",
+    )
     return parser.parse_args()
 
 
@@ -284,14 +306,14 @@ def play(x, o):
     ----------
     x: A function representing player x
     o: A function representing player o
-    Each of the two functions above should accept board state and current
+    Each of the two functions above should accept a board and a
     player and return the coordinates of a legal move.
 
     Returns
     -------
     The outcome of the game
     """
-    players = {'X': x, 'O': o}
+    players = {"X": x, "O": o}
     # Randomly choose who plays first
     current_player = choice(list(players.keys()))
     board = new_board()
@@ -305,16 +327,19 @@ def play(x, o):
         if get_winner(board):
             return f"{current_player} wins"
         if is_full(board):
-            return 'Draw'
-        current_player = 'O' if current_player == 'X' else 'X'
+            return "Draw"
+        current_player = "O" if current_player == "X" else "X"
 
 
 if __name__ == "__main__":
     init(autoreset=True)  # Initializing Colorama
 
-    strategies = {'human': human_player, '0': random_ai,
-                  '1': finds_winning_moves_ai,
-                  '2': finds_winning_and_losing_moves_ai}
+    strategies = {
+        "human": human_player,
+        "0": random_ai,
+        "1": finds_winning_moves_ai,
+        "2": finds_winning_and_losing_moves_ai,
+    }
     args = parse_arguments()
     x = strategies[args.playerX]
     o = strategies[args.playerO]

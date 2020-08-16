@@ -54,7 +54,7 @@ def load_board_state(filepath):
             exit()
 
 
-def render(board):
+def render(screen, board, scale, sleep):
     """
     Renders the board to terminal
 
@@ -66,19 +66,19 @@ def render(board):
     -------
     Nothing
     """
-    screen.clear()
-    screen.addstr("=" * (args.scale * len(board[0]) + 2) + "\n", curses.A_BOLD)
+    screen.erase()
+    screen.addstr("=" * (scale * len(board[0]) + 2) + "\n", curses.A_BOLD)
     for row in board:
         screen.addstr("|", curses.A_BOLD)
         for c in row:
             if c == 1:
-                screen.addstr(PC * args.scale, curses.color_pair(2))
+                screen.addstr(PC * scale, curses.color_pair(2))
             else:
-                screen.addstr(PC * args.scale, curses.color_pair(1))
+                screen.addstr(PC * scale, curses.color_pair(1))
         screen.addstr("|" + "\n", curses.A_BOLD)
-    screen.addstr("=" * (args.scale * len(board[0]) + 2) + "\n", curses.A_BOLD)
+    screen.addstr("=" * (scale * len(board[0]) + 2) + "\n", curses.A_BOLD)
     screen.refresh()
-    curses.napms(int(args.sleep * 1000))
+    curses.napms(int(sleep * 1000))
 
 
 def moore_neighbours(board):
@@ -182,7 +182,7 @@ def parse_arguments():
         "-l", "--length", help=txt["length"], type=int, default=15, metavar=""
     )
     parser.add_argument(
-        "-sl", "--sleep", help=txt["sleep"], default=0.05, type=float, metavar=""
+        "-sl", "--sleep", help=txt["sleep"], default=0.07, type=float, metavar=""
     )
     parser.add_argument(
         "-pb", "--prob", help=txt["proba"], type=prob, default=0.3, metavar=""
@@ -207,10 +207,34 @@ def init_screen():
     screen = curses.initscr()
     screen.keypad(True)
     curses.start_color()
+    curses.noecho()
     curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_BLACK)
     curses.init_pair(2, curses.COLOR_CYAN, curses.COLOR_CYAN)
     curses.curs_set(0)
     return screen
+
+
+def deinit_screen(screen):
+    """
+    This function restores the normal state and functionality of the terminal
+    window.
+
+    Parameters
+    ----------
+    screen: curses screen object
+
+    Returns
+    -------
+    None
+    """
+    screen.addstr("Terminal state reached, press any key to exit...")
+    screen.refresh()
+    screen.getkey()
+    # Resetting terminal back to normal
+    curses.curs_set(1)
+    screen.keypad(False)
+    curses.echo()
+    curses.endwin()
 
 
 def play(board, screen):
@@ -228,10 +252,13 @@ def play(board, screen):
     """
     while True:
         try:
-            render(board)
+            render(screen, board, args.scale, args.sleep)
         except curses.error:
             curses.endwin()
-            print("Enlrage the terminal window or choose smaller dimensions")
+            print(
+                "Terminal window is too small,",
+                "please enlrage the terminal window or choose smaller dimensions.",
+            )
             exit()
         # Run the game as long as the generated board is not repeating
         if (
@@ -252,8 +279,4 @@ if __name__ == "__main__":
         board = random_state(args.width, args.length, args.prob)
     screen = init_screen()
     play(board, screen)
-    screen.addstr("Terminal state reached, press any key to exit...")
-    screen.refresh()
-    curses.curs_set(1)
-    screen.getch()
-    curses.endwin()
+    deinit_screen(screen)

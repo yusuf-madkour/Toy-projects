@@ -2,7 +2,7 @@
 
 life.py is a Python script that simulates [Conway's game of life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) in terminal. It is a toy project inspired by [Robert Heaton's Programming Projects for Advanced Beginners](https://robertheaton.com/2018/12/08/programming-projects-for-advanced-beginners/).
 
-![](https://github.com/yusuf-madkour/toy-projects/blob/master/Conway's%20game%20of%20life/demo.gif)
+![](https://github.com/yusuf-madkour/Toy-projects/blob/master/Conway%20game%20of%20life/demo.gif)
 
 
 ## Usage
